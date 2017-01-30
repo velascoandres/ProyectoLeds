@@ -1,0 +1,64 @@
+<html>
+<style>
+ td {
+ 	text-align:right;
+ 	border:1ptx dotted gray;
+ }
+ </style>
+<head>
+ <script>
+   document.write("Andres Velasco </br>");
+   var nota1=
+    {
+       datos:4356,
+       nEstudiantes:19,
+       listar: function()
+               {
+               	var j=1;
+                var i=0;
+                document.write('<table>');
+
+                for (i=0;i<this.nEstudiantes;i++)
+                  {
+                     document.write('<tr><td>'+i+'</td><td>');
+                     document.write((this.datos&j)==j?10:1);
+                     document.write('</td></tr>');
+                     j*=2;
+                  }
+                  document.write('</table>');
+               },           
+        promedio: function()
+                 {
+                    var avg=0;
+                    var j=1;
+                    var i=0;
+                    for (i=0;i<this.nEstudiantes;i++)
+                    {
+                      avg+=((this.datos&j)==j?10:1);
+                      j*=2;
+                    }
+                    return(avg/=this.nEstudiantes);   
+                 },
+         reemplazar: function(pos, valor)
+                     {
+                       if(valor!=0)
+                       {
+                       	this.datos|=Math.trunc(Math.pow(2,pos));
+                       }
+                       else
+                       {
+                       	this.datos&=~Math.trunc(Math.pow(2,pos));
+                       }
+
+                     }        
+   	};
+   	nota1.reemplazar(0,1);
+   	nota1.reemplazar(1,10);
+   	nota1.reemplazar(2,0);
+   	document.write(nota1.datos+"<br />");
+   	nota1.listar();
+   	document.write(nota1.promedio());	
+
+ </script>
+ </head>
+ </html>

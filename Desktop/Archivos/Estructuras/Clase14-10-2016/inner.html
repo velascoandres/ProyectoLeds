@@ -1,0 +1,19 @@
+<html>
+<head>
+   <script>
+      var a= [1,2,3,4,5];
+      var b=[6,7,8,9,10];
+      var c = a.concat(b);
+      var d=c.slice(2,6);
+
+      function desplegar(){
+        var z= document.getElementById('zona');
+        z.innerHTML=d.toString();
+     }
+  </script>
+</head>
+<body>
+   <button OnClick= "desplegar()">Hacer Click</button>
+   <div id="zona"></div>
+</body>
+</html>

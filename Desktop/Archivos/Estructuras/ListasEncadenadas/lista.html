@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">
+		function Nodolista (valor=0){
+			this.valor=parseInt(valor);
+			this.raiz=0;
+			this.siguiente=null;
+			this.posicion=0;
+            //valor=parseInt(valor);
+        this.calcularPosicion=function(){
+        	var posicion=0;
+            if(this.siguiente!=null){
+            	this.siguiente.posicion=this.posicion+1;
+                this.siguiente.calcularPosicion();
+            } 
+        }
+
+        /*this.insertar=function(valor){
+        	if(this.siguiente!=null){
+        		this.siguiente.insertar(valor);
+        	}else{
+        		this.siguiente=new Nodolista(valor);
+        	}
+        	this.calcularPosicion();
+
+        }*/
+
+
+       /* this.insertar=function(v){
+        	var valor=parseInt(v);
+        	if(valor<this.valor){
+        		 aux=this.valor;
+        		this.valor=valor;
+        	if(this.siguiente==null){
+        		this.siguiente=new Nodolista(aux);
+        	}else{
+        		this.siguiente.insertar(aux);
+        	}
+        	}else{	
+        	if(this.siguiente!=null){
+        		this.siguiente.insertar(valor);
+        	}else{
+        		this.siguiente=new Nodolista(valor);
+        	}
+        }
+        	this.calcularPosicion();
+
+        }*/
+      this.insertar = function (pos, valor){
+            var i = 0;
+            var aux = this;
+            while (aux!=null){
+            if(pos==i){
+            	v=aux.valor;
+                aux.valor=valor;
+                nodo=new Nodolista(v);
+                nodo.siguiente=aux.siguiente;
+                aux.siguiente=nodo;     
+                
+            }else {
+            	aux=aux.siguiente;
+            	i++;
+            }
+        }
+      }  
+         
+        this.inserPost=function (valor,pos){
+        	var paux=null;
+        	var aux
+        	if (pos==-1){
+        		pos=0;
+        	}
+        	if(pos!=0 && this.posicion==pos-1){
+        	paux=this.siguiente;
+        	this.siguiente=null;
+        	this.insertar(valor);
+        	this.siguiente.siguiente=paux;
+        	this.calcularPosicion();
+            }else{
+             if(pos!=0){
+              this.siguiente.inserPost(valor,pos);
+             }
+            }
+            if(pos==0 /*&& this.posicion==pos*/){
+               this.inserBegin(valor);
+            }
+        }
+
+        this.inserBegin=function(valor){
+            var aux=0;
+            var paux=null;
+            aux = this.valor;
+            paux=this.siguiente;
+            this.valor=valor;
+            this.siguiente=null;
+            this.insertar(aux);
+            this.siguiente.siguiente=paux;
+            this.calcularPosicion();
+        }
+
+
+
+        this.toString=function(){
+            var salida="";
+            salida+="valor: <"+this.valor+"> "+"posicion: "+this.posicion+" "+"<br/ >";
+            if(this.siguiente!=null){
+                salida+=this.siguiente.toString();   
+            }
+            return salida; 
+            }
+
+         this.imprimir =  function(){
+         	var auxiliar = this.valor;
+         	if(this.siguiente!=null){
+         	auxiliar = auxiliar +' '+ this.siguiente.imprimir();
+         	}
+         	return auxiliar;
+         }   
+ 		
+ 		this.agregarNum=function(valor){
+     
+            if(valor>this.valor){
+            	if (this.siguiente!=null){
+            		this.siguiente.agregarNum(valor);
+            	}else{
+            		this.insertar(valor);  
+            	}
+            }
+            if(valor < this.valor) {
+               this.inserPost(valor,this.posicion-1); 		
+            }
+
+ 		}
+
+
+
+ 		};
+        var lista=null;
+        var img = new Image();
+        img.src="sprite.png";
+        
+     function insertar(){
+     	var dato = document.getElementById('dato');
+     	var info=document.getElementById('info');
+     	var valor=dato.value;
+     	if(lista==null){
+     		lista = new Nodolista(valor);
+
+     	}else {
+     		lista.insertar(valor);
+     	}
+     	info.innerHTML=lista.imprimir();
+     	dibujar();
+     }
+      
+    function dibujar(){
+    	var canvas=document.getElementById('miCanvas');
+    	var ctx = canvas.getContext('2d');
+    	canvas.width=canvas.width;
+    	p=lista;
+    	var i =0;
+    	while (p!=null){
+    	if(p.siguiente!=null){	
+         ctx.drawImage(img,0,0,628,338,90*i,0,90,85);
+         }else {
+         ctx.drawImage(img,0,354,826,338,90*i,0,90,85);
+         }
+         ctx.fillText(p.valor,90*i+20,35);
+         p=p.siguiente;
+         i++;		
+    	}
+    } 
+		/*var lista = new Nodolista(16);
+		/*lista.insertar(15);
+		lista.insertar(10);
+		lista.insertar(12);*/
+		/*lista.agregarNum(15);
+		lista.agregarNum(10);
+		lista.agregarNum(12);
+		lista.agregarNum(0);
+		lista.agregarNum(40);
+		lista.agregarNum(5);
+		lista.agregarNum(-9);*/
+		//lista.inserPost(40,3);
+		//lista.inserBegin(21);
+		//document.write(lista.toString());
+	</script>>
+</head>
+<body>
+<input type="text" placeholder="Dato" id="dato" value="">
+<button onclick="insertar()" >Insertar</button>
+<br />
+<canvas id="miCanvas"></canvas>
+<div id="info"></div>
+</body>
+</html>>

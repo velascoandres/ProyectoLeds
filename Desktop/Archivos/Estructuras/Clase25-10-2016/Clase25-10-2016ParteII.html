@@ -1,0 +1,46 @@
+<html>
+  <head>
+     <meta charset="utf-8">
+  </head>
+  <script>
+      function Estudiante (id,nombre,email){
+        this.id=id;
+        this.nombre=nombre;
+        this.email=email;
+        this.toString=function(){
+          return '['+this.id+' '+this.nombre+' '+this.email+']';
+       }
+        this.imprimir=function () {
+            document.write(this.toString()+'<br/>');
+        }
+      }
+      //se crea un arreglo de objetos
+      var arreglo=[new Estudiante(1, 'Luis', 'c1'),new Estudiante(2,'Mario','c2')];
+      document.write('<br/>'+arreglo.toString());
+      //se agrega un objeto al final del arreglo
+      arreglo.push(new Estudiante(3, 'Carlos','c3'));
+      document.write('<br/ >'+arreglo.toString());
+      arreglo.splice(1,0,new Estudiante(4,'Mateo','c4'));
+      document.write('<br/ >'+arreglo.toString());
+      //se agrega un objeto al inicio del arreglo
+      arreglo.unshift(new Estudiante(5,'Jose','c5'));
+      document.write('<br/ >'+arreglo.toString());
+      //se extrae el ultimo objeto del arreglo
+      var est = arreglo.pop();
+      document.write('<br/ >'+est.toString());
+      document.write('<br/ >'+arreglo.toString());
+      //Se extrae el primer objeto del arreglo
+      est=arreglo.shift();
+      document.write('<br/ >'+est.toString());
+      document.write('<br/ >'+arreglo.toString());
+      //desde el elemento 1 al elemento 2 no se considera el elemento 2
+      est=arreglo.slice(1,2);
+      //desde la posicion 1 elimine 1 elemento
+      arreglo.splice(1,1);
+      document.write('<br/>'+est.toString());
+      document.write('<br/>'+arreglo.toString());
+      //Se esta extreyendo un subarreglo de un arreglo por eso se usa el corchete
+      document.write('<br/>'+est[0].nombre);
+    </script>
+
+</html>

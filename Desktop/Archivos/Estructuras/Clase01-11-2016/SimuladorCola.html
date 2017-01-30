@@ -1,0 +1,74 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style >
+      td{border: 2px solid black;
+        width: 200px;
+        text-align:center;
+      }
+    </style>
+  <script>
+  ///declaramos un arreglo global
+function Pila(){
+     this.miPila=[];
+     this.push=function(){
+     var valor=document.getElementById("elemento").value;
+     this.miPila.unshift(valor);
+     this.dibujar();
+     this.dibujar2();
+     //alert(valor);
+   }
+     this.pop=function(){
+     //se recupera el elemento no el valor del textbox
+     var elemento=document.getElementById("elemento");
+     var valor = this.miPila.pop();
+     //reemplaza el contenido de la caja de texto por el del valor
+     elemento.value=valor;
+     this.dibujar();
+     this.dibujar2();
+     //alert ('Hola');
+   }
+     this.dibujar=function(){
+     var i=0;
+     var salida="<table>"
+     for(i=0;i<this.miPila.length;i++){
+       salida+="<tr><td>"+this.miPila[i]+"</td></tr>";
+     }
+     salida+="</table>";
+     document.getElementById('pila').innerHTML=salida;
+   }
+
+   this.dibujar2=function() {
+     var canvas = document.getElementById('miCanvas');
+     var ctx = canvas.getContext("2d");
+     //Para que el dibujo no se sobreescriba
+     canvas.width=canvas.width;
+     var i;
+     ctx.fillStyle = '#FFFFFF';
+     ctx.fillRect(0,0,200,100);
+     for (i=0;i<this.miPila.length;i++){
+          ctx.moveTo(i*3+5,5);
+          //escala
+          ctx.lineTo(i*3,this.miPila[i]*5+5);
+     }
+     //comienza a dibujar
+     ctx.stroke();
+   }
+
+ }
+   var p = new Pila();
+
+
+  </script>
+</head>
+<body>
+  <h1> Simulador de Cola </h1>
+  <input type="text" name="elements" id="elemento" value="">
+  <br/>
+  <input type="submit" name="control" value="push" onclick="p.push()">
+  <input type="submit" name="control" value ="pop" onclick="p.pop()">
+   <div id="pila"> </div>
+   <canvas id='miCanvas' width="200" height="100">
+   </canvas>
+</body>
+</html>

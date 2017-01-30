@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+<html ng-app='miapp'>
+<head>
+<meta charset='utf-8'>
+<script src='angular.min.js'></script>
+<script>
+  var lista=null;
+  var pila=null;
+  var arbol=null;
+  var personaje=[];
+  var img=null;
+  var fondo=null;
+  var pos=0;
+  var canLeft=0;
+  var canTop=0;
+  img =new Image();
+  img.src="sprite0.png";
+  fondo=new Image();
+  fondo.src="paisaje.jpg";
+  sprite=new Image();
+  sprite.src="sprite.png";
+  function calcularOffsetDato(valor){
+    var offsetDato=5;
+    if(valor<10 && valor>-1){
+	  offsetDato=15;
+	}else if(valor<100 && valor>9){
+	  offsetDato=10;
+	}
+	 return(offsetDato);
+  }
+  function clickCanvas(event){
+    var dato=null;  
+    var x = event.pageX - canLeft-10,
+        y = event.pageY - canTop-10;
+		dato=lista.detectarMouse(x,y);
+		if(dato!=null){
+		  personaje[0].npose=dato.valor%personaje[0].pose.length;
+          //alert('['+x+' '+y+' '+dato.dato+']');
+		}else{
+		  dato=arbol.detectarMouse(x,y);
+		  if(dato!=null){
+		     personaje[0].npose=dato.valor%personaje[0].pose.length;
+		  }else{
+		    dato=pila.detectarMouse(x,y);
+			if(dato!=null){
+			  personaje[0].npose=dato.valor%personaje[0].pose.length;
+			}else{
+		      dato=personaje[0].detectarMouse(x,y);
+			  if(dato!=null){
+			    personaje[0].npose=(dato.npose+1)%personaje[0].pose.length;
+			  }else{
+			    dato=personaje[1].detectarMouse(x,y);
+				if(dato!=null){
+				  alert('hola');
+				}
+			  }
+			}
+		  }
+		}
+		
+  }
+  function cargar(){
+	canvas=document.getElementById('miCanvas');
+	canvas.addEventListener('click',clickCanvas);
+	canLeft=canvas.offsetLeft;
+	canTop=canvas.offsetTop;
+  }
+  function Pila(){
+      this.dato=[];
+	  this.x0=2;
+	  this.y0=2;
+	  this.ancho=50;
+	  this.alto=46;
+	  this.push=function(nodo){
+	     this.dato.unshift(nodo);
+	  }
+	  this.pop=function(){
+	     return this.dato.shift();
+	  }
+	  this.recuperar=function(){
+	     return this.dato[0];
+	  }
+	  this.get=function(i){
+	     var dato=null
+	     if(i>=0 & i<this.dato.length){
+		   dato=this.dato[i];
+		 }
+	     return dato;
+	  }
+	  this.length=function(){
+	    return this.dato.length;
+	  }
+	  this.toString=function(){
+	     var salida='[';
+		 for(var i=0;i<this.dato.length;i++){
+		     salida+=(' '+this.dato[i].carga.valor);
+		 }
+		 salida+=']';
+		 return salida;
+	  }
+	  this.vaciar=function(){
+	      //Revisar
+		  this.dato.length=0;
+	  }
+	  this.desplegar=function(idtexto){
+	     var info=document.getElementById(idtexto);
+		 info.innerHTML=info.innerHTML+this.toString();
+	  }
+	  this.dibujar=function(ctx){
+	    for(var i=0;i<this.dato.length;i++){
+		   ctx.drawImage(img,342,159,97,92,this.x0,this.y0+this.alto*i,this.ancho,this.alto);
+		 // ctx.rect(this.x0,this.y0+this.alto*i,this.ancho,this.alto);
+         // ctx.stroke(); 
+		  ctx.font="15px Georgia"; 
+	      //ctx.fillText(this.dato[i].valor,this.x0+30,this.y0+35+i*46);
+		  ctx.fillText(this.dato[i].carga.valor,this.x0+30,this.y0+35+i*46);
+		}
+	    
+	  }
+	  this.detectarMouse=function(x,y){
+	     for(var i=0;i<this.dato.length;i++){
+		    if(x>this.x0 && x<this.x0+this.ancho && y>this.y0+this.alto*i && y<this.y0+this.alto*(i+1)){
+			   break;
+			}
+		 }
+		 return(this.get(i));
+	  }
+  }
+  function Lista(){
+     this.raiz=null;
+	 this.x0=100;
+	 this.y0=0;
+	 this.ancho=55;
+	 this.alto=42;
+	 this.insertar=function(dato){
+	  if(this.raiz==null){
+	   this.raiz=new NodoLista(dato);
+	  }else{
+	   this.raiz.insertar(dato);
+	  }
+	 }
+	 this.indexOf=function(i){
+	    var j=0;
+		p=this.raiz;
+	    while(j<i && p!=null){
+		   j++;
+		   p=p.siguiente;
+		}
+		return p;
+	 }
+	 this.toString=function(){
+	    var salida='';
+		if(this.raiz!=null){
+		   salida=this.raiz.toString();
+		}
+		return(salida);
+	 }
+	 this.detectarMouse=function(x,y){
+	    var p=this.raiz;
+	    var i=0;
+	    while(p!=null){
+		  if(x>this.x0+50*i&&x<this.x0+this.ancho+50*i&&y>this.y0&&y<this.y0+this.alto){
+		    break;
+		  }else{
+		    p=p.siguiente;
+			i++;
+		  }
+	    }
+		return(p);
+	 }
+	 this.dibujar=function(ctx){
+	   var p=this.raiz;
+	   var i=0;
+	   while(p!=null){
+	     if(p.siguiente!=null){
+	       ctx.drawImage(img,0,0,160,125,this.x0+50*i,this.y0,this.ancho,this.alto);
+	     }else{
+	       ctx.drawImage(img,0,145,348,125,this.x0+50*i,this.y0,this.ancho+58,this.alto);
+	     }
+	     ctx.font="15px Georgia"; 
+	     ctx.fillText(p.valor,this.x0+50*i+calcularOffsetDato(p.valor)+3,this.y0+23);
+ 	     p=p.siguiente;
+	     i++;
+	  }
+	 }
+	 this.desplegar=function(idTexto){
+	   var texto=document.getElementById(idTexto);
+	   texto.innerHTML=texto.innerHTML+this.toString();
+	 }
+  }
+  function NodoLista(dato){
+     this.siguiente=null;
+	 this.dato=dato;
+	 this.valor=Math.round(dato);
+	 this.pos=0;
+     this.insertar=function(dato){ 
+	   //var valor=Math.round(dato);
+	   if(dato<this.dato){
+	     aux=this.dato;
+		 this.dato=dato;
+		 this.valor=Math.round(dato);
+		 if(this.siguiente==null){
+		    this.siguiente=new NodoLista(aux);
+		 }else{
+		    this.siguiente.insertar(aux);
+		 }
+	   }else{
+         if(this.siguiente!=null){
+		    this.siguiente.insertar(dato);
+		 }else{
+		    this.siguiente=new NodoLista(dato);
+		 }
+		 this.pos++;
+	   }
+	   return this.pos;
+     }
+     this.toString=function(){
+        var auxiliar=' '+this.valor+':'+this.dato;
+		if(this.siguiente!=null){
+		   auxiliar=auxiliar+' '+this.siguiente.toString();
+		}
+		return auxiliar
+     }	 
+	
+  }
+  
+function Nodo(dato){
+ this.dato=dato;
+ this.carga={valor:0};
+ this.carga.valor=Math.round(dato);
+ this.der=null;
+ this.izq=null;
+ this.peso=0;
+ this.altura=1;
+
+ this.calcularAltura=function(){
+   var alturaDerecha=0;
+   var alturaIzquierda=0;
+   if(this.der!=null) {
+   alturaDerecha=this.der.altura;
+   }
+   if(this.izq!=null) {
+    alturaIzquierda=this.izq.altura;
+   }
+   this.altura=1+Math.max(alturaDerecha,alturaIzquierda);
+   this.peso=alturaDerecha-alturaIzquierda;
+ }
+ this.intercambiar=function(nodo){
+   var aux=this.carga;
+   var auxd=this.dato;
+   this.carga=nodo.carga;
+   this.dato=nodo.dato;
+   nodo.carga=aux;
+   nodo.dato=auxd;
+ }
+ this.rotar=function(){
+        if(this.peso==2){
+		   if(this.der.peso==-1){
+		        this.der.intercambiar(this.der.izq);
+		        //aux=this.der.valor; //28
+				//this.der.valor=this.der.izq.valor //26
+				//this.der.izq.valor=aux; // 28 por 26	
+				paux=this.der.izq; // ok
+				this.der.izq=this.der.izq.izq; //ok
+				paux.izq=paux.der; //ok
+				paux.der=this.der.der; //ok
+				this.der.der=paux; // ok
+				this.der.der.calcularAltura(); 
+				this.der.calcularAltura();
+		   }
+      
+		   // intercambiar valores
+		   this.intercambiar(this.der);
+		   //aux=this.valor;
+		   //this.valor=this.der.valor;
+		   //this.der.valor=aux;
+		   //sujetar subarbol izq.
+		   paux=this.izq;
+		   //pasando nodo der a izq
+		   this.izq=this.der;
+		   // sujeto nodo der der
+		   this.der=this.der.der;
+		   this.izq.der=this.izq.izq;
+		   // sujeto paux al lado izq
+		   this.izq.izq=paux;
+		   //recalcular altura
+		   this.izq.calcularAltura();
+              
+	
+		}else if(this.peso==-2){
+		    if(this.izq.peso==1){
+			    this.izq.intercambiar(this.izq.der);
+			    //aux=this.izq.valor;
+				//this.izq.valor=this.izq.der.valor;
+				//this.izq.der.valor=aux;	
+				paux=this.izq.der;
+				this.izq.der=this.izq.der.der;
+				paux.der=paux.izq;
+				paux.izq=this.izq.izq;
+				this.izq.izq=paux;
+				this.izq.izq.calcularAltura();
+				this.izq.calcularAltura();
+			}
+            // intercambiar valores
+		   this.intercambiar(this.izq);
+	  	   //aux=this.valor;
+		   //this.valor=this.izq.valor;
+		   //this.izq.valor=aux;
+		   //sujetar subarbol izq.
+		   paux=this.der;
+		   //pasando nodo der a izq
+		   this.der=this.izq;
+		   // sujeto nodo der der
+		   this.izq=this.izq.izq;
+		   this.der.izq=this.der.der;
+		   // sujeto paux al lado izq
+		   this.der.der=paux;
+		   //recalcular altura
+		   this.der.calcularAltura();
+		  
+		}
+           this.calcularAltura();       
+   }
+   this.buscar=function(dato){
+     var retorno=null;
+	   if(dato==this.dato){
+	      retorno=this;
+	   }else
+       if(dato>this.dato){
+	      if(this.der!=null){
+		     
+	         retorno=this.der.buscar(dato);
+		  }
+	   }else if(dato<this.dato){
+	      if(this.izq!=null){
+	         retorno=this.izq.buscar(dato);
+	      }
+	   }
+	   return retorno;
+   }
+   this.buscar=function(dato,pila){
+     var retorno=null;
+	   if(dato==this.dato){
+	      retorno=this;
+		  pila.push(this);
+	   }else
+       if(dato>this.dato){
+	      if(this.der!=null){
+		     pila.push(this);
+	         retorno=this.der.buscar(dato,pila);
+		  }
+	   }else if(dato<this.dato){
+	      if(this.izq!=null){
+             pila.push(this);		  
+	         retorno=this.izq.buscar(dato,pila);
+	      }
+	   }
+	   return retorno;
+   }
+   this.buscarCandidato=function(pila){
+      var elementoBorrar=pila.get(0);
+	  if(elementoBorrar.izq!=null){
+	     p=elementoBorrar.izq;
+		 pila.push(p);
+	     while(p.der!=null){
+		     p=p.der;
+			 pila.push(p);
+		 }
+	  }else if(elementoBorrar.der!=null){
+	     p=elementoBorrar.der;
+		 pila.push(p);
+	     while(p.izq!=null){
+		     p=p.izq;
+			 pila.push(p);
+		 }
+	  }
+   }
+   
+   this.eliminar=function(dato){
+       
+   }
+   this.insertar = function(dato){
+    if(dato>this.dato){
+      if(this.der!=null){
+	    this.der.insertar(dato);      
+      }else{
+	    this.der=new Nodo(dato);   
+      }    
+   }else{
+     if(this.izq!=null){
+       this.izq.insertar(dato);
+     }else{
+       this.izq=new Nodo(dato);
+     }
+   }
+   this.calcularAltura();
+   this.rotar();
+   this.calcularAltura();
+ };
+ 
+ this.imprimir=function(nivel){
+   var salida = "";
+   nivel++;
+   if(this.izq!=null){
+     salida+=this.izq.imprimir(nivel);
+   }
+   salida+='{"valor":'+this.carga.valor+',"nivel":'
+            +nivel+',"peso":'+this.peso+',"altura":'+this.altura+',"dato":'+this.dato+'},';
+   if(this.der!=null){
+     salida+=this.der.imprimir(nivel);
+   }
+   return salida;
+ }
+ this.jsonSalida=function(){
+    var salida=this.imprimir(0);
+    salida='['+salida.substring(0,salida.length-1)+']';
+    return JSON.parse(salida);
+ }
+ this.obtenerX=function(i,nDatos){
+    return i*40+400-nDatos*25;
+ }
+ this.obtenerY=function(nivel){
+    return nivel*15+25;
+ }
+ this.detectarMouse=function(x,y){
+     var datos=this.jsonSalida();
+	 var dato=null;
+	 var i=0;
+     for( i=0;i<datos.length;i++){
+	   if(x>this.obtenerX(i,datos.length)    && 
+	      x<this.obtenerX(i,datos.length)+50 && 
+		  y>this.obtenerY(datos[i].nivel)    &&
+		  y<this.obtenerY(datos[i].nivel)+50
+		  ){
+	      break;
+	   }
+	 }
+	 if(i!=datos.length){
+	   dato=datos[i];
+	 }
+	 return(dato);
+ }
+ this.toString=function(){
+ var salida = "";
+ if(this.izq!=null){
+ salida+=this.izq.toString();
+ }
+ salida+="{"+this.valor+"}";
+   if(this.der!=null){
+     salida+=this.der.toString();
+   }
+   return salida;
+ };
+
+ 
+ this.dibujar=function(ctx){
+  var ctx=canvas.getContext('2d');
+  var datos=this.jsonSalida();
+  for(var i=0;i<datos.length;i++){
+	ctx.drawImage(img,315,0,140,132,this.obtenerX(i,datos.length),this.obtenerY(datos[i].nivel),50,50);
+    ctx.fillText(datos[i].valor,
+	        calcularOffsetDato(datos[i].valor)+this.obtenerX(i,datos.length),
+			   this.obtenerY(datos[i].nivel)+30);
+  } 
+  }
+};
+ 
+function Arbol(){
+  this.raiz=null;
+  this.insertar=function(dato){
+   if(this.raiz==null){
+     this.raiz=new Nodo(dato);
+   }else{
+     this.raiz.insertar(dato);
+   }
+  }
+  this.dibujar=function(ctx){
+    if(this.raiz!=null){
+	  this.raiz.dibujar(ctx);
+	}
+  }
+  this.detectarMouse=function(x,y){
+     var p=null;
+     if(this.raiz!=null){
+	   p=this.raiz.detectarMouse(x,y);
+	 }
+	 return p;
+  }
+  this.buscar=function(dato){
+    var nodo=null;
+	if(this.raiz!=null){
+	   nodo=this.raiz.buscar(dato);
+	}
+	return nodo;
+  }
+  this.buscar=function(dato,pila){
+    var nodo=null;
+	if(this.raiz!=null){
+	   nodo=this.raiz.buscar(dato,pila);
+	   nodo.buscarCandidato(pila);
+	}
+	return nodo;
+  }
+  this.eliminar=function(dato,pila){
+     var nodo=this.buscar(dato,pila);
+	 var hijo=null;
+	 if(nodo!=null){
+	   var candidato=pila.get(0);
+	   if(nodo!=candidato){
+	     nodo.dato=candidato.dato;
+	     nodo.carga=candidato.carga;
+	     //elimnar candidato
+	     var anterior=pila.get(1);
+	     if(nodo==anterior){
+	     	if(candidato.izq!=null){
+	     		hijo=candidato.izq;
+	     		anterior.izq=hijo;
+	     	}else if (candidato.der!=null) {
+                  hijo=candidato.der;
+                  anterior.der=hijo;
+	     	}else if (anterior.izq==candidato){
+                  anterior.izq=null;
+	     	}else if(anterior.der==candidato){
+                  anterior.der=null;      
+	     	} else if(candidato.der!=null){
+                  hijo=candidato.der;
+                  anterior=hijo;
+	     	}else{
+                if(candidato.der!=null){
+	      //rama derecha
+	      hijo=candidato.der;
+		  anterior.izq=hijo;
+	     }else if(candidato.izq!=null){
+	      // rama izquierda
+		  hijo=candidato.izq;
+		  anterior.der=hijo;
+	     }else{
+		   if(anterior.der!=null && anterior.der==candidato){
+			    anterior.der=null;
+		   }else if(anterior.izq!=null && anterior.izq==candidato){
+		        anterior.izq=null;
+		   }
+		 }
+	     	}
+	     }
+	     
+	   }else{
+	      if(pila.length()>1){
+	        var anterior=pila.get(1);
+		    if(anterior.der!=null && anterior.der==candidato){
+			    anterior.der=null;
+			}else if(anterior.izq!=null && anterior.izq==candidato){
+		        anterior.izq=null;
+		    }
+	      }else{
+	        this.raiz=null;
+	      }
+	   }
+	   ///candidato.destroy();
+	   candidato=null;
+	   while(nodo!=pila.pop()&&pila.length()>0){
+	   	var aux=nodo;
+	   	while(aux!=null){
+           aux.calcularAltura();
+           aux.rotar(); 
+           aux.calcularAltura();
+           aux=pila.pop();
+	   	}
+	   }
+    }
+  }
+  this.desplegar=function(idTexto){
+    var texto=document.getElementById(idTexto);
+    var salida=this.raiz.imprimir(0);
+    salida='['+salida.substring(0,salida.length-1)+']';
+    var datos=JSON.parse(salida);
+    texto.innerHTML=salida;
+  }
+}
+  
+function Imagen(n,x,y){
+   this.n=n;
+   this.x=x;
+   this.y=y;
+   this.visible=false;
+   this.imagen=[{posx:478,posy:161,ancho:169,alto:133}];
+   this.dibujar=function(ctx){
+        if(this.visible){
+	          ctx.drawImage(sprite,this.imagen[n].posx,this.imagen[n].posy,
+			                this.imagen[n].ancho,this.imagen[n].alto,this.x,
+							this.y,this.imagen[n].ancho,this.imagen[n].alto);
+        }
+	}
+	this.mostrar=function(valor){
+	   this.visible=valor;
+	}
+	this.detectarMouse=function(x,y){
+	   var p=null;
+	          if(x>this.x && x<this.x+this.imagen[this.n].ancho 
+			     && y>this.y && y<this.y+this.imagen[this.n].alto && this.visible){
+			    p=this;
+			  }
+			 return p;
+	 }
+}
+  
+function Personaje(frame,x,y,dir){
+     this.frame=frame;
+	 this.x=x;
+	 this.y=y;
+	 this.dir=dir;
+	 this.npose=0;
+	 this.pose=[{posx:0,posy:0,ancho:55,alto:80,n:3,mover:1},
+	           {posx:260,posy:85,ancho:65,alto:80,n:1,mover:1},
+			   {posx:245,posy:170,ancho:75,alto:80,n:2,mover:1},
+			   {posx:0,posy:75,ancho:55,alto:80,n:2,mover:0},
+			   {posx:0,posy:240,ancho:60,alto:80,n:2,mover:1},
+			   {posx:264,posy:0,ancho:70,alto:80,n:3,mover:1}
+	  ];
+	 this.mover=function(){
+	          this.frame= this.frame<this.pose[this.npose].n?
+			        this.frame+1 : 0;
+			  if(this.pose[this.npose].mover>0)
+			      this.x= this.x<1050?this.x+5 : -50;
+	 }
+	
+	 this.dibujar=function(ctx){
+	          ctx.drawImage(sprite,this.pose[this.npose].posx+this.frame*this.pose[this.npose].ancho,
+			                       this.pose[this.npose].posy,this.pose[this.npose].ancho,this.pose[this.npose].alto,
+			                       this.x,this.y,this.pose[this.npose].ancho,this.pose[this.npose].alto);
+			  this.mover();
+	 }
+	 this.detectarMouse=function(x,y){
+	   var p=null;
+	          if(x>this.x && x<this.x+this.pose[this.npose].ancho 
+			     && y>this.y && y<this.y+this.pose[this.npose].alto){
+			    p=this;
+			  }
+			 return p;
+	 }
+   }
+  function dibujarPonerNodo(valor,fase){
+     var canvas=document.getElementById('miCanvas');
+	 var ctx=canvas.getContext('2d');
+	 ctx.drawImage(img,0,145,399,125,90*pos,25*fase,133,42);
+	 ctx.font="12px Georgia";
+	 ctx.fillText(valor,90*pos+10,23+25*fase);
+  }
+  window.addEventListener('load',cargar);
+</script>
+</head>
+<body ng-controller='control1'>
+<input type="text" placeholder="Dato" ng-model="dato.expresion">
+<button ng-click="insertar()">Insertar</button>
+<button ng-click="buscar()">Buscar</button>
+<button ng-click="eliminar()">Eliminar</button>
+<br />
+<canvas id="miCanvas" width="1050" height="501" style="border:2px solid gray;padding:10px"></canvas>
+
+<div id="info"></info>
+<script>
+   
+   var miapp=angular.module('miapp',[])
+   .controller('control1',function($scope,$interval){
+      var canvas=document.getElementById('miCanvas');
+	  var ctx=canvas.getContext('2d');
+	  var sprite=document.getElementById('sprite');
+	  $scope.dato={expresion:'',valor:0};
+	  $scope.tiempo=0;
+      personaje=[new Personaje(3,0,420,'der'),
+	             new Imagen(0,930,250)];
+	  lista=new Lista();
+	  arbol=new Arbol();
+	  pila=new Pila();
+	  $scope.buscar=function(){
+	         pila.vaciar();
+	         var nodo=arbol.buscar($scope.dato.expresion,pila);
+			 if(nodo!=null){
+			     personaje[1].mostrar(true);
+			 }else{
+			     personaje[1].mostrar(false);
+			 }
+			 pila.desplegar('info');
+	  }
+	  $scope.eliminar=function(){
+	        pila.vaciar();
+	        var nodo=arbol.eliminar($scope.dato.expresion,pila);
+	  }
+	  $scope.insertar=function(){
+	    var info=document.getElementById('info');
+		$scope.dato.valor=eval($scope.dato.expresion);
+		
+		if(typeof $scope.dato.valor === "undefined"){
+		   $scope.dato.valor=0;
+		}
+		lista.insertar($scope.dato.valor);
+		arbol.insertar($scope.dato.valor);
+		//pila.push($scope.dato.valor);
+        arbol.desplegar('info');
+		lista.desplegar('info');
+		//pila.desplegar('info')
+		/*
+	    dibujarPonerNodo(valor,2);
+	    setTimeout(function(){ dibujar();dibujarPonerNodo(valor,2);}, 1000);
+	    setTimeout(function(){ dibujar();dibujarPonerNodo(valor,1);pos=-1}, 1200);
+	    setTimeout(function(){ dibujar(); pos=0 }, 1300);
+         */
+		 $scope.dato.expresion='';
+	     $scope.dato.valor='-1'
+	  }
+	  
+	  $scope.graficarEscena=function(){
+	          $scope.tiempo++; 
+			  //canvas.width=canvas.width;
+			  //ctx.clearRect(0,0,251,381);
+			  ctx.drawImage(fondo,0,0,1050,501,0,0,1050,501);
+			  for(var i=0;i<personaje.length;i++){
+			    personaje[i].dibujar(ctx);
+			  }
+              lista.dibujar(ctx);
+              arbol.dibujar(ctx);
+              pila.dibujar(ctx);			  
+	  }
+	  $interval(function(){
+	     $scope.graficarEscena();
+	  },300);  
+   });
+</script>
+</body>
+</html>

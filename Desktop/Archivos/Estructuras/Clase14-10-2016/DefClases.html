@@ -1,0 +1,50 @@
+<style>
+	td{
+      text-align: right;
+      border:1px dotted gray;
+	}
+</style>
+<script >
+    //Se crea la clase junto con el constructor;
+	function Notas(datos, nEstudiantes){
+		this.datos=datos;
+		this.nEstudiantes=nEstudiantes;
+		this.listar=function(){
+			var j=1;
+            document.write('<table>');
+            for (var i = 0; i<nEstudiantes; i++) {
+             	document.write('<tr><td>'+i+'</td><td>');
+                     document.write((this.datos&j)==j?10:1);
+                     document.write('</td></tr>');
+                     j*=2;
+             }
+             document.write('</talbe>'); 
+		};
+		this.promedio=function(){
+            var avg=0;
+                    var j=1;
+                    var i=0;
+                    for (i=0;i<this.nEstudiantes;i++){
+                      avg+=((this.datos&j)==j?10:1);
+                      j*=2;
+                    }
+                    return(avg/=this.nEstudiantes);   
+                 };
+        this.reemplazar=function(pos, valor){
+                if(valor!=0){
+                    this.datos|=Math.trunc(Math.pow(2,pos));
+                 }else{
+                    this.datos&=~Math.trunc(Math.pow(2,pos));
+                 }
+              };        
+		};
+	//se instancia la clase	
+	nota1=new Notas(4356, 19);
+	nota1.reemplazar(0,1);
+	nota1.reemplazar(1,10);
+	nota1.reemplazar(2,0);
+	document.write(nota1.datos+"<br />");
+	nota1.listar();
+	document.write(nota1.promedio());
+
+</script>>

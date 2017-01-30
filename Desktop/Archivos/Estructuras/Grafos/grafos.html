@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+  	 function Vertice (x,y,n,g){
+         this.x=x;
+         this.y=y;
+         this.n=n;
+         this.g=g;
+
+         this.dibujar=function(ctx){
+            ctx.drawImage(sprite,g*50);    
+         }  
+
+  	    this.cordInit=function(position,width){
+           f1=position/width;
+           f2=position%width;
+           return [f1,f2];
+  	    } 
+
+  	 }
+
+  </script>
+	
+</head>
+<body>
+
+</body>
+</html>

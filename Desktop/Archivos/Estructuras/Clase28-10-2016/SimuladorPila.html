@@ -1,0 +1,54 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style >
+      td{border: 2px solid black;
+        width: 200px;
+        text-align:center;
+      }
+    </style>
+  <script>
+  ///declaramos un arreglo global
+function Pila(){
+     this.miPila=[];
+     this.push=function(){
+     var valor=document.getElementById("elemento").value;
+     this.miPila.unshift(valor);
+     this.dibujar();
+     //alert(valor);
+   }
+
+     this.pop=function(){
+     //se recupera el elemento no el valor del textbox
+     var elemento=document.getElementById("elemento");
+     var valor = this.miPila.shift();
+     //reemplaza el contenido de la caja de texto por el del valor
+     elemento.value=valor;
+     this.dibujar();
+     //alert ('Hola');
+   }
+     this.dibujar=function(){
+     var i=0;
+     var salida="<table>"
+     for(i=0;i<this.miPila.length;i++){
+       salida+="<tr><td>"+this.miPila[i]+"</td></tr>";
+     }
+     salida+="</table>";
+     document.getElementById('pila').innerHTML=salida;
+   }
+
+ }
+   var p = new Pila();
+
+
+  </script>
+</head>
+<body>
+  <h1> Simulador de Pila </h1>
+  <input type="text" name="elements" id="elemento" value="">
+  <br/>
+  <input type="submit" name="control" value="push" onclick="p.push()">
+  <input type="submit" name="control" value ="pop" onclick="p.pop()">
+   <div id="pila"> </div>
+</body>
+</html>
