@@ -1,29 +1,52 @@
-<!DOCTYPE html>
 <html>
 <head>
   <script>
-  	 function Vertice (x,y,n,g){
-         this.x=x;
-         this.y=y;
-         this.n=n;
-         this.g=g;
+    var sprite = new Image();
+    sprite.src="sprite2.png";
+    var w=75;
+    var h=81;
+    var x0=0;
+    var y0=0;
+    var ng=7;
+      Vertice = function (x,y,g,n){
+        this.x=x;
+        this.y=y;
+        this.g=g;
+        this.nombre=n;
+        this.dibujar=function(ctx){
+          ctx.drawImage(sprite,w*(g%ng)+x0,h*(Math.trunc(g/ng))+y0,w,h,this.x,this.y,w,h);
+        }
+      }
+      Arista=function(v1,v2,s,n){
+        this.verticeA=v1;
+        this.verticeB=v2;
+        this.sentido=s;
+        this.nombre=n;
+        this.dibujar=function(ctx){
+          ctx.beginPath();
+          ctx.moveTo(verticeA.x+w,verticeA.y+h/2);
+          ctx.lineTo(verticeB.x,verticeb.y+h/2);
+          ctx.stroke();
+        }
+      }
+     Grafo=function(){
+       this.verctices= [];
+       this.aristas=[];
+       this.addVertices=function (x,y,g,n) {
+         this.vertices.push(new Vertice(x,y,g,n));
+       }
+     }
 
-         this.dibujar=function(ctx){
-            ctx.drawImage(sprite,g*50);    
-         }  
-
-  	    this.cordInit=function(position,width){
-           f1=position/width;
-           f2=position%width;
-           return [f1,f2];
-  	    } 
-
-  	 }
+     function graficar(){
+       var ctx = document.getElementById('canvas').getContext('2d');
+        var v =  new Vertice(0,0,6,'Lasso');
+       v.dibujar(ctx);
+     }
 
   </script>
-	
 </head>
 <body>
-
+  <button onclick="graficar()">Graficar</button>
+  <canvas id='canvas' width="500" height="300" > </canvas>
 </body>
 </html>
